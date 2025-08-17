@@ -1,27 +1,88 @@
 ---
+import Clock from '@material-symbols/svg-400/rounded/schedule-fill.svg';
+import Location from '@material-symbols/svg-400/rounded/location_on-fill.svg';
+
+import Pill from '../components/Pill.astro';
+import Section from '../components/Section.astro';
 import Welcome from '../components/Welcome.astro';
 import Layout from '../layouts/Layout.astro';
 import "../styles/global.css";
+import PillContainer from '../components/PillContainer.astro';
+
+const devicon = (name: string, variant: string = "original") =>
+    `https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/${name}/${name}-${variant}.svg`;
 
 // Welcome to Astro! Wondering what to do next? Check out the Astro documentation at https://docs.astro.build
 // Don't want to use any of this? Delete everything in this file, the `assets`, `components`, and `layouts` directories, and start fresh.
 ---
 
+<script>
+    const refresh = () => {
+        let time = new Date();
+        let element = document.getElementById("clock-text")!;
+        element.textContent = time.toLocaleTimeString([], { timeZone: "Australia/Melbourne", hour: "numeric", minute: "numeric" });
+    };
+    setInterval(refresh, 1000);
+    refresh();
+</script>
+
 <Layout>
-    <div class="flex flex-col items-center">
-        <div class="flex flex-row w-2/5 bg-orange rounded-4xl mt-8 p-4 justify-between">
-            <div class="flex flex-col gap-2">
-                <h1 class="text-4xl">Hi, I'm Cilly!</h1>
+    <div class="flex flex-col items-center p-8 space-y-4">
+        <Section>
+            <div class="flex flex-row space-x-4 items-center">
+                <img class="size-24 rounded-full" src="/hifumi-main.png">
+                <div class="flex flex-col gap-2">
+                    <h1 class="text-4xl font-semibold">Cilly Leang</h1>
+                </div>
             </div>
-            <img class="size-24 rounded-full" src="/hifumi-main.png">
-        </div>
-        <h1>You did it!</h1>
-        <p>
-            Visit <a href="https://vuejs.org/" target="_blank" rel="noopener">vuejs.org</a> to read the
-            documentation
-        </p>
-        <!-- <button class="" @click="increment"> -->
-        <!--     hewwo!! count: {{ count }} -->
-        <!-- </button> -->
+        </Section>
+        <Section header="About">
+            <div class="flex flex-col space-y-2">
+                <p class="text-lg">
+                    19yo software developer. Likes reverse engineering and modding.
+                </p>
+                <PillContainer>
+                    <Pill text="Naarm/Melbourne">
+                        <Location class="size-6 fill-black" slot="icon" />
+                    </Pill>
+                    <Pill>
+                        <Clock class="size-6 fill-black" slot="icon" />
+                        <p class="font-semibold" id="clock-text" slot="text" />
+                    </Pill>
+                </PillContainer>
+            </div>
+        </Section>
+        <Section header="Languages">
+            <PillContainer>
+                <Pill icon={devicon("nixos")} text="Nix" />
+                <Pill icon={devicon("kotlin")} text="Kotlin" />
+                <Pill icon={devicon("java")} text="Java" />
+                <Pill icon={devicon("rust")} text="Rust" />
+                <Pill icon={devicon("typescript")} text="TypeScript" />
+                <Pill icon={devicon("javascript")} text="JavaScript" />
+                <Pill icon={devicon("c")} text="C" />
+                <Pill icon={devicon("cplusplus")} text="C++" />
+                <Pill icon={devicon("csharp")} text="C#" />
+            </PillContainer>
+        </Section>
+        <Section header="Frameworks">
+            <PillContainer>
+                <Pill icon={devicon("jetpackcompose", "plain")} text="Compose" />
+                <Pill icon={devicon("astro")} text="Astro" />
+                <Pill mono={true} icon={devicon("react")} text="React" />
+            </PillContainer>
+        </Section>
+        <Section header="Technologies">
+            <PillContainer>
+                <Pill icon={devicon("linux")} text="Linux" />
+                <Pill icon={devicon("git")} text="Git" />
+                <Pill icon={devicon("android")} text="Android" />
+            </PillContainer>
+        </Section>
+        <Section header="Links">
+            <PillContainer>
+                <Pill icon={devicon("github")} text="GitHub" />
+            </PillContainer>
+        </Section>
     </div>
 </Layout>

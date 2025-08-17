@@ -1,0 +1,13 @@
+---
+interface Props {
+    header?: string;
+}
+
+const { header } = Astro.props;
+---
+<div class="w-xl bg-yellow rounded-4xl py-4 px-6">
+    { (header != null) &&
+        <h1 class="text-3xl font-semibold mb-2">{header}</h1>
+    }
+    <slot />
+</div>
