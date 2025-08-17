@@ -1,11 +1,27 @@
 ---
 import Welcome from '../components/Welcome.astro';
 import Layout from '../layouts/Layout.astro';
+import "../styles/global.css";
 
 // Welcome to Astro! Wondering what to do next? Check out the Astro documentation at https://docs.astro.build
 // Don't want to use any of this? Delete everything in this file, the `assets`, `components`, and `layouts` directories, and start fresh.
 ---
 
 <Layout>
-	<Welcome />
+    <div class="flex flex-col items-center">
+        <div class="flex flex-row w-2/5 bg-orange rounded-4xl mt-8 p-4 justify-between">
+            <div class="flex flex-col gap-2">
+                <h1 class="text-4xl">Hi, I'm Cilly!</h1>
+            </div>
+            <img class="size-24 rounded-full" src="/hifumi-main.png">
+        </div>
+        <h1>You did it!</h1>
+        <p>
+            Visit <a href="https://vuejs.org/" target="_blank" rel="noopener">vuejs.org</a> to read the
+            documentation
+        </p>
+        <!-- <button class="" @click="increment"> -->
+        <!--     hewwo!! count: {{ count }} -->
+        <!-- </button> -->
+    </div>
 </Layout>

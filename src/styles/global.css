@@ -1,1 +1,17 @@
+@import url("https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,200..1000;1,200..1000&display=swap");
 @import "tailwindcss";
+
+@theme {
+    --color-*: initial;
+    --color-black: #000000;
+    --color-white: #FFFFFF;
+
+    --color-yellow: #FAEDCB;
+    --color-turquoise: #C9E4DE;
+    --color-cyan: #C6DEF1;
+    --color-purple: #DBCDF0;
+    --color-pink: #F2C6DE;
+    --color-orange: #F7D9C4;
+
+    --font-sans: "Nunito", sans-serif;
+}
