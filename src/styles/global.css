@@ -1,4 +1,5 @@
-@import url("https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,200..1000;1,200..1000&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,200..1000;1,200..1000&family=Patrick+Hand&display=swap");
+@import "dseg/css/dseg.css";
 @import "tailwindcss";
 
 @theme {
@@ -12,6 +13,23 @@
     --color-purple: #DBCDF0;
     --color-pink: #F2C6DE;
     --color-orange: #F7D9C4;
+    --color-gray: #CCCCCC;
+    --color-light-gray: #DDDDDD;
 
     --font-sans: "Nunito", sans-serif;
+    --font-handwritten: "Patrick Hand", sans-serif;
+    --font-seg7: "DSEG7-Classic", monospace;
+    --font-seg14: "DSEG14-Classic", monospace;
+}
+
+@layer utilities {
+  .lined-paper {
+    background-image: repeating-linear-gradient(
+      #ccc 0,
+      #ccc 1px,
+      transparent 1px,
+      transparent 1.5em
+    );
+    background-size: 100% 1.5em;
+  }
 }

@@ -1,3 +1,13 @@
+---
+import "../styles/global.css";
+
+interface Props {
+    title?: string;
+}
+
+const { title = "Cilly's Website" } = Astro.props;
+---
+
 <!doctype html>
 <html lang="en">
 	<head>
@@ -5,7 +15,7 @@
 		<meta name="viewport" content="width=device-width" />
                 <link rel="icon" type="image/svg+xml" href="/hifumi-main.png" />
 		<meta name="generator" content={Astro.generator} />
-		<title>Cilly's Website</title>
+                <title>{title}</title>
 	</head>
 	<body class="bg-white h-screen w-screen">
 		<slot />

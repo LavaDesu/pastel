@@ -1,0 +1,198 @@
+---
+import Section from "../components/Section.astro";
+import Layout from "../layouts/Layout.astro";
+
+---
+
+<script>
+    const TESTING = false;
+
+    let showColon = false;
+    const refresh = () => {
+        const time = new Date();
+
+        const clockTime = document.getElementById("clock-time")!;
+        let timeContent = time.toLocaleTimeString("en-AU", { timeZone: "Australia/Melbourne", hour: "numeric", minute: "numeric", hour12: false });
+        if (showColon)
+            timeContent = timeContent.replace(":", " ")
+        showColon = !showColon;
+        clockTime.textContent = timeContent
+
+        const clockDay = document.getElementById("clock-day")!;
+        clockDay.textContent = time.toLocaleString("en-AU", { timeZone: "Australia/Melbourne", weekday: "short" });
+
+        const clockDate = document.getElementById("clock-date")!;
+        clockDate.textContent = time.toLocaleString("en-AU", { timeZone: "Australia/Melbourne", month: "numeric", day: "numeric" });
+    };
+    setInterval(refresh, 1000);
+    refresh();
+
+    interface Current {
+        date: string,
+        isPlaying: boolean,
+        progressMs: number,
+        deviceName: string,
+        track: Track,
+    }
+
+    interface Track {
+        albums: Album[],
+        artists: Artist[],
+        durationMs: number,
+        explicit: boolean,
+        externalIds: { spotify: string[] },
+        id: number,
+        name: string,
+        spotifyPreview: string,
+    }
+
+    interface Album {
+        id: number,
+        image: string,
+        name: string,
+    }
+
+    interface Artist {
+        id: number,
+        image: string,
+        name: string,
+    }
+
+    let paused = true;
+    let progress = -1;
+    let length = 0;
+    let fetching = false;
+    const currentlyPlaying = () => {
+        if (fetching)
+            return;
+
+        fetching = true;
+        let promise;
+        if (TESTING) {
+            promise = new Promise<any>(r => r({"item":{"date":"2025-08-18T15:48:27.320Z","isPlaying":true,"progressMs":210000,"deviceName":"hyacinth","track":{"albums":[{"id":10474194,"image":"https://is1-ssl.mzstatic.com/image/thumb/Music122/v4/a9/e1/66/a9e16604-aad7-5de7-64ba-da4e1a52fd59/4562251593312_cover.jpg/768x768bb.jpg","name":"(un) jslkdfjasentimental spica"}],"artists":[{"id":452665,"name":"sana","image":"https://i.scdn.co/image/ab67616d00001e021e501d56ca2a5033b16c2185"}],"durationMs":221013,"explicit":false,"externalIds":{"spotify":["36L6q5vIxCHntJamOHoVcV"],"appleMusic":["1650355289"]},"id":55187378,"name":"Little Fighter","spotifyPopularity":12,"spotifyPreview":"https://p.scdn.co/mp3-preview/9c2fa19feb5ae3a75d153df0d2cf7fc7a49e025e?cid=d8a5ed958d274c2e8ee717e6a4b0971d","appleMusicPreview":"https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview122/v4/30/34/aa/3034aad3-b13c-6854-d2f5-1e3999144915/mzaf_1589750817832948277.plus.aac.p.m4a"},"platform":"SPOTIFY"}}))
+        } else {
+            promise = fetch("https://api.stats.fm/api/v1/users/cillyleang/streams/current")
+                .then(res => res.json())
+        }
+        promise
+            .then(({ item: data }: { item: Current }) => {
+                const album = data.track.albums[0].name;
+                const albumCover = data.track.albums[0].image;
+                const artist = data.track.artists.map(a => a.name).join(", ");
+                const name = data.track.name;
+                paused = !data.isPlaying;
+                progress = Math.round(data.progressMs / 1000) - 1;
+                length = Math.round(data.track.durationMs / 1000);
+                document.getElementById("track-name")!.textContent = name;
+                document.getElementById("track-artist")!.textContent = artist;
+                document.getElementById("track-album")!.textContent = album;
+                (document.getElementById("track-album-cover") as HTMLImageElement).src = albumCover;
+                document.getElementById("track-isplaying")!.textContent = paused ? "Paused" : "Now Playing";
+
+                fetching = false;
+
+                incrementTrack();
+            })
+            .catch(e => { console.error(e) })
+    };
+    setInterval(currentlyPlaying, 10e3);
+    currentlyPlaying();
+
+    const incrementTrack = () => {
+        if (progress == -1 || length == 0)
+            return;
+
+        if (!paused)
+            progress += 1;
+        if (progress > length) {
+            progress = length
+            if (!fetching)
+                setTimeout(currentlyPlaying, 2e3);
+        }
+
+        const percent = progress / length;
+        document.getElementById("track-prog-bar")!.style.width = `${Math.round(percent * 100)}%`;
+
+        const durationText = Math.floor(progress / 60) + ":" + (progress % 60).toString().padStart(2, "0");
+        const left = length - progress;
+        const durationLeftText = "-" + Math.floor(left / 60) + ":" + (left % 60).toString().padStart(2, "0");
+        document.getElementById("track-prog-elapsed")!.textContent = durationText;
+        document.getElementById("track-prog-remaining")!.textContent = durationLeftText;
+    }
+    setInterval(incrementTrack, 1e3);
+</script>
+
+<Layout title="the cilly space">
+    <!-- background -->
+    <div class="text-2xl flex size-full overflow-hidden bg-[#333] items-center justify-center">
+        <!-- table -->
+        <div class="flex relative h-7/8 w-7/8 bg-orange rounded-4xl">
+            <!-- book -->
+            <div class="relative bg-yellow aspect-[1/calc(sqrt(2))] h-198 max-h-198 m-auto lined-paper pt-1 px-4 shadow-xl">
+                <!-- <img class="mt-6 size-36 ml-auto mr-6 rounded-full" src="/hifumi-main.png" /> -->
+                <img class="absolute top-8 right-10 size-36 rounded-full" src="/hifumi-main.png" />
+                <div class="absolute top-10 right-2 rotate-45 h-8 w-32 bg-gray opacity-50 border-none" />
+                <div class="absolute top-32 right-24 rotate-45 h-8 w-32 bg-gray opacity-50 border-none" />
+                <p class="font-handwritten mt-0.5 wrap-break-word text-2xl/normal">
+                <br>
+                <br>
+                Hi! I'm Cilly, also known as Lava.<br>
+                <br>
+                <br>
+                I've taught myself programming since I was around 10, and right now I'm currently undertaking a Bachelor of Computer Science whilst doing random projects.<br>
+                <br>
+                I'm currently involved with the Aliucord project, backporting some new features to the old but <i>really</i> comfy native kotlin app.<br>
+                <br>
+                I love open source software such as Linux and NixOS which, despite all its flaws, is an awesome Linux distribution! I encourage anyone with spare time to try it out :)<br>
+                <br>
+                Thanks for reading, I hope you have a good day~
+                </p>
+            </div>
+            <!-- clock -->
+            <div class="absolute flex right-40 top-10 rotate-6 bg-turquoise w-60 h-40 shadow-md shadow-black/40 rounded-2xl p-6">
+                <div class="flex flex-col size-full m-auto bg-gray items-center justify-around p-3 rounded-md">
+                    <p id="clock-time" class="font-seg7 text-5xl mx-auto"></p>
+                    <div class="flex flex-row w-full justify-around">
+                        <p class="font-seg14 text-sm">AEST</p>
+                        <p class="font-seg14 text-sm" id="clock-day"></p>
+                        <p class="font-seg14 text-sm" id="clock-date"></p>
+                    </div>
+                </div>
+            </div>
+            <!-- ipod -->
+            <div class="absolute flex flex-col right-50 bottom-40 -rotate-8 w-50 aspect-[1.6/3.5] bg-pink rounded-4xl shadow-lg shadow-black/40">
+                <a class="absolute size-full rounded-4xl z-10 hover:bg-black/5 cursor-pointer" href="https://stats.fm/user/cillyleang" target="_blank" />
+                <div class="flex flex-col h-[calc(0.9/3.5*100%)] m-5 mb-0 bg-white rounded-lg shadow-xs shadow-black/70">
+                    <div class="flex bg-gray w-full h-1/5 rounded-t-lg items-center justify-center border-b-[#0003] border-b-1">
+                        <p class="text-sm text-black" id="track-isplaying">Loading...</p>
+                    </div>
+                    <div class="flex flex-1 flex-col w-full px-2 justify-center">
+                        <div class="flex flex-row space-x-2">
+                            <img class="size-11 m-1 ml-0 aspect-square" id="track-album-cover" />
+                            <div class="flex flex-1 flex-col items-end w-full min-w-0">
+                                <p class="text-xs text-right w-full text-nowrap overflow-hidden overflow-ellipsis" id="track-name" />
+                                <p class="text-xs text-right w-full text-nowrap overflow-hidden overflow-ellipsis" id="track-artist" />
+                                <p class="text-xs text-right w-full text-nowrap overflow-hidden overflow-ellipsis" id="track-album" />
+                            </div>
+                        </div>
+                        <div class="relative w-full h-4">
+                            <div class="absolute text-xs bg-gray size-full shadow-xs shadow-cyan/100 rounded-sm" />
+                                <div class="absolute text-xs bg-cyan h-full shadow-xs shadow-cyan/100 rounded-sm" id="track-prog-bar" />
+                        </div>
+                        <div class="flex flex-row w-full mt-1 justify-between">
+                            <p class="text-xs" id="track-prog-elapsed">hi</p>
+                            <p class="text-xs" id="track-prog-remaining">hi</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="flex-1 flex">
+                    <div class="flex size-40 m-auto rounded-full bg-white">
+                        <div class="size-20 m-auto rounded-full bg-pink" />
+                    </div>
+                </div>
+                <div class="absolute top-full right-6 h-12 w-5 m-auto bg-white shadow-sm shadow-black/50" />
+                <div class="absolute top-full mt-12 right-7.25 h-10000 w-2 m-auto rounded-b-full bg-gray shadow-sm shadow-black/50" />
+            </div>
+        </div>
+    </div>
+</Layout>
